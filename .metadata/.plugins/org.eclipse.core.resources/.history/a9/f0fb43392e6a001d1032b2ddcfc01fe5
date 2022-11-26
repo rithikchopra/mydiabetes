@@ -1,0 +1,7 @@
+package com.myDiabetes.qa.pages;
+
+import com.myDiabetes.qa.base.TestBase;
+
+public class DealsPage extends TestBase{
+
+}

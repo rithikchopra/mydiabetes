@@ -1,0 +1,47 @@
+package com.myDiabetes.qa.pages;
+
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+
+import com.myDiabetes.qa.base.TestBase;
+
+public class LoginPage extends TestBase{
+	
+	//Page Factory - OR:
+	@FindBy(xpath="//input[@type='email']")
+	WebElement email;
+	
+	@FindBy(xpath="//input[@type='password']")
+	WebElement password;
+	
+	@FindBy(xpath="//button[@type='submit']")
+	WebElement loginBtn;
+	
+	@FindBy(xpath="//div[@class='ug-sdk__sc-1d7fvu3-0 ug-sdk__sc-19uam73-0 hgkTfc kTgdYM ug-preview-quit-icon ug-preview-quit-button']")
+	WebElement closePopup;
+	
+	
+	//Initializing the Page Objects:
+	public LoginPage(){
+		PageFactory.initElements(driver, this);
+	}
+	
+	//Actions:
+	public String validateLoginPageTitle(){
+		return driver.getTitle();
+	}
+	
+	public void login(String un, String pwd){
+		email.sendKeys(un);
+		password.sendKeys(pwd);
+		loginBtn.click();
+	}
+	
+	public void closePopups() {
+		driver.switchTo().frame("ug-modal-frame");
+		closePopup.click();
+	}
+	
+}
