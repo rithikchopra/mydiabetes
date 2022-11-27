@@ -1,0 +1,80 @@
+package com.myDiabetes.qa.pages;
+
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+
+import com.myDiabetes.qa.base.TestBase;
+
+public class LoginPage extends TestBase{
+	
+	//Page Factory - OR:
+	@FindBy(xpath="//input[@type='email']")
+	WebElement email;
+	
+	@FindBy(xpath="//input[@type='password']")
+	WebElement password;
+	
+	@FindBy(xpath="//button[@type='submit']")
+	WebElement loginBtn;
+	
+	@FindBy(xpath="//div[@class='ug-sdk__sc-1d7fvu3-0 ug-sdk__sc-19uam73-0 hgkTfc kTgdYM ug-preview-quit-icon ug-preview-quit-button']")
+	WebElement closePopup;
+	
+	@FindBy(xpath="//div[@class='top-navigation']//div//a[contains(text(),'Patients')]")
+	WebElement patientsNavigation;
+	
+	@FindBy(xpath="//button//span[contains(text(),'Add Patient')]")
+	WebElement addPatient;
+	
+	@FindBy(xpath="//input[@ng-model='user.fname']")
+	WebElement firstName;
+	
+	@FindBy(xpath="//input[@ng-model='user.lname']")
+	WebElement lastName;
+	
+	@FindBy(xpath="(//md-select[@ng-model='track.recruitement_source'])")
+	WebElement sourceSelection;
+	
+	@FindBy(xpath="//md-option//div[contains(text(),'Billboard')]")
+	WebElement BillboardSourceSelection;
+	
+	@FindBy(xpath="//button[@class='md-raised md-primary md-button md-ink-ripple']//span[contains(text(),'Save')]")
+	WebElement saveButton;
+	
+	//Initializing the Page Objects:
+	public LoginPage(){
+		PageFactory.initElements(driver, this);
+	}
+	
+	//Actions:
+	public String validateLoginPageTitle(){
+		return driver.getTitle();
+	}
+	
+	public void login(String un, String pwd){
+		email.sendKeys(un);
+		password.sendKeys(pwd);
+		loginBtn.click();
+	}
+	
+	public void closePopups() {
+		try {
+//		driver.switchTo().frame("ug-modal-frame");
+//		closePopup.click();
+		}catch (Exception e) {
+		}
+	}
+	
+	public void addNewPatient() {
+		patientsNavigation.click();
+		addPatient.click();
+		firstName.sendKeys("Test");
+		lastName.sendKeys("Test");
+		sourceSelection.click();
+		BillboardSourceSelection.click();
+		saveButton.click();
+	}
+	
+}

@@ -1,0 +1,194 @@
+package com.crm.qa.testcases;
+
+import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
+
+import com.myDiabetes.qa.base.TestBase;
+import com.myDiabetes.qa.pages.LoginPage;
+import com.relevantcodes.extentreports.LogStatus;
+
+public class LoginPageTest extends TestBase{
+	LoginPage loginPage;
+	
+	public LoginPageTest(){
+		super();
+	}
+	
+	@BeforeTest
+	public void setUp(){
+		initialization();
+		loginPage = new LoginPage();	
+	}
+	
+	@Test(priority=1)
+	public void loginPageTitleTest(){
+		String title = loginPage.validateLoginPageTitle();
+		Assert.assertEquals(title, "Patient Qualifier");
+	}
+	
+	@Test(priority=2)
+	public void login(){
+		loginPage.login(prop.getProperty("username"), prop.getProperty("password"));
+		loginPage.closePopups();
+	}
+	
+	@Test(priority=3)
+	public void loginTest(){
+		loginPage.addNewPatient();
+	}
+	
+	@AfterTest
+	public void tearDown(){
+		driver.quit();
+	}
+
+}
+
+public class CLR_10193 extends BaseTest {
+	
+	private WebDriver driver;
+	private String PageTitle = "" ;
+	private int[] HomeHeaderSize;
+	private String ThirdKeyword = "";
+	
+	String TCName = this.getClass().getSimpleName();
+	
+    String TCDesc = "E2E_PDF Func_Verify user is able to share the PDF content when authenticated";
+	
+	@Test(dataProvider = "getData",description="CLR-7471_Validate user landed in same home page on re authentication after page expire",  priority=2)
+		public void CLR_10193_10195(Hashtable <String,String>table) throws AWTException, FindFailed{
+		
+			if(table.get(Constants.DATA_STATUS_COL_NAME).equalsIgnoreCase("false")&& table.equals(null)){
+				return;
+			}
+			
+			extentLogger = reports.startTest(TCName);
+			
+			driver = initBrowser(table.get("Browser"));
+			openURL(driver);
+			
+			new Login(driver,extentLogger)
+			.LoginToAEM(table.get("MgrUserName"), table.get("MgrPassword"))		
+			.getHomePageObject()
+			.openDAMAssetsFolder()
+			.getAssetsPageObject()
+			.navigateInsideDAM(table.get("PathToSharedFolder"))
+			.uploadDocumentInDAMRobot(table.get("filePath"))
+			.renameUploadAsset();
+			
+			Assets obj = new Assets(driver,extentLogger);
+			this.PageTitle = obj.returnAssetName();
+			
+			new Assets(driver,extentLogger)
+			.searchAndSelectTheAssetInDAM1(PageTitle)
+			.editMetadataInDAM()
+			.getMetadataFromAssets()
+			
+			.setContentTitle(PageTitle)
+			.setDateLastReviewed(table.get("DateLastRevised").toString())
+			.selectOwningRegion((table.get("CLRegion").split(","))[1])
+			.setContentOwnerDetails(table.get("COName"), table.get("COEmailId"))
+			
+			.clickHasTranslationRadio()
+			.clickAddInTranslationFileAsset()
+			.setAndSearchLookupFile("YellowPDF.pdf.pdf")
+			.selectFirstFileFromLookup()
+			.setTransalationLanguage1("Chinese")
+			
+			.addContentTags(table.get("ContentTagPath"))
+			.clickAdvancedTab()
+			.selectExternalAudience(table.get("MD_ExternalAudience"))
+			
+			.check_UncheckApprovedForOtherRegions(table.get("MD_ApproveForOtherRegion"))
+			.clickonBorrowingRegionTab(table.get("BR_Region"), table.get("BR_ApprovingBody"),table.get("BR_ContactPerson"),"share with affliates") 
+			.clickSave()
+			.clickBackMetaData()
+	
+			.getAssetsObjFromMetaData()
+			.searchAndSelectTheAssetInDAM1(PageTitle)
+			.clickMore()
+			.clickQuickPublish();
+			driver.quit();
+			
+			driver = initBrowser(table.get("Browser"));
+			new AdobeExperienceWebAnalytics(driver, extentLogger).openAdobeDebuggerPlugin();
+			
+			openURL(driver,FrameworkConfig.getProperty("CL_URL"));
+			
+			new CLLogin(driver,extentLogger)
+			.selectRegion((table.get("CLRegion").split(","))[0]);
+			
+			new CLHome(driver,extentLogger)
+			.clickSignIn()
+			.getClLoginFromCLHome()
+			.LoginToCL(table.get("CLUsername"), table.get("CLPassword"));
+
+			new CLHome(driver,extentLogger)
+			.verifyCLHomePageDisplayed();
+			
+			CLHome HomeHeader = new CLHome(driver,extentLogger);
+			this.HomeHeaderSize = HomeHeader.returnHeightWidthofHomeHeader();
+			
+			 new CLHome(driver,extentLogger)
+	            .changeRegion((table.get("CLRegion").split(","))[1])
+	            .makeASearch(PageTitle)
+	            .verifySearchResultsPagedisplayed()
+	            .clickSearchedContent(PageTitle)
+	            .getAdobeWebAnalyticsobj()
+	            .switchToAnalyticstabAndClearEvents()
+	            .getClHomeFromAnalyticspage()
+	            .chooseNewTransLangContentPage("Chinese")
+	            .getAdobeWebAnalyticsobj()
+	            .validateAdobeAnalyticsData("CLR_10193");
+			 driver.quit();
+			 
+				
+			 
+	     	 driver = initBrowser(table.get("Browser"));
+					openURL(driver);
+					
+					new Login(driver,extentLogger)
+					.LoginToAEM(table.get("MgrUserName"), table.get("MgrPassword"))		
+					.getHomePageObject()
+					.openDAMAssetsFolder()
+					.getAssetsPageObject()
+					.navigateInsideDAM(table.get("PathToSharedFolder"));
+						
+
+					new Assets(driver,extentLogger)
+					.selectCreatedPage(PageTitle)
+					.clickMore()
+					.getSitesPageObjFromAssets()
+					.deleteContents()
+					.deleteContents()
+					.deleteContents();								
+					
+					driver.quit();	 		
+	}
+	
+			
+	@DataProvider
+	public Object[][] getData(){
+		return TestDataUtil.getTestData(objDataTable, TCName);
+	}
+
+	@AfterMethod
+	public void clearAll(ITestResult result){
+		if(result.equals("FAIL")){
+			extentLogger.log(LogStatus.FAIL, "");
+			
+		}
+		reports.endTest(extentLogger);
+		if(driver!=null){
+			driver.quit();
+		}
+		
+	}		
+			
+			
+
+}

@@ -1,0 +1,62 @@
+package com.crm.qa.testcases;
+
+import java.awt.AWTException;
+import java.util.Hashtable;
+
+import org.openqa.selenium.WebDriver;
+import org.testng.Assert;
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.Test;
+
+import com.myDiabetes.qa.Constants.Constants;
+import com.myDiabetes.qa.base.TestBase;
+import com.myDiabetes.qa.pages.LoginPage;
+import com.relevantcodes.extentreports.LogStatus;
+
+public class LoginPageTest extends TestBase {
+
+	private WebDriver driver;
+	LoginPage loginPage;
+
+	String TCName = this.getClass().getSimpleName();
+
+	String TCDesc = "TC001_Validate creating new patient details";
+
+	public LoginPageTest() {
+		super();
+	}
+
+	@Test(description = "TC001_Validate creating new patient details", priority = 1)
+	public void LoginPageTest() throws AWTException {
+
+		driver = initBrowser("Chrome");
+//		initialization();
+		driver.get(prop.getProperty("url"));
+
+		extentLogger = reports.startTest(TCName);
+//		loginPage = new LoginPage();
+
+		new LoginPage(driver, extentLogger)
+		.validateLoginPageTitle()
+		.login(prop.getProperty("username"), prop.getProperty("password"))
+		.closePopups()
+		.addNewPatient();
+
+		driver.quit();
+	}
+
+	@AfterMethod
+	public void clearAll(ITestResult result) {
+		if (result.equals("FAIL")) {
+			extentLogger.log(LogStatus.FAIL, "");
+
+		}
+		reports.endTest(extentLogger);
+		if (driver != null) {
+			driver.quit();
+		}
+
+	}
+
+}

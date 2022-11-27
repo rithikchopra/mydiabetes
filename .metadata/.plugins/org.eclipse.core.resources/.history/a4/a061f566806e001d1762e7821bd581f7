@@ -1,0 +1,51 @@
+package com.crm.qa.testcases;
+
+import org.testng.Assert;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
+
+import com.myDiabetes.qa.base.TestBase;
+import com.myDiabetes.qa.pages.LoginPage;
+
+public class del {
+
+}
+
+
+public class LoginPageTest extends TestBase{
+	LoginPage loginPage;
+	
+	public LoginPageTest(){
+		super();
+	}
+	
+	@BeforeTest
+	public void setUp(){
+		initialization();
+		loginPage = new LoginPage();	
+	}
+	
+	@Test(priority=1)
+	public void loginPageTitleTest(){
+	}
+	
+	@Test(priority=2)
+	public void login(){
+		String title = loginPage.validateLoginPageTitle();
+		Assert.assertEquals(title, "Patient Qualifier");
+		loginPage.login(prop.getProperty("username"), prop.getProperty("password"));
+		loginPage.closePopups();
+		loginPage.addNewPatient();
+	}
+	
+	@Test(priority=3)
+	public void loginTest(){
+	}
+	
+	@AfterTest
+	public void tearDown(){
+		driver.quit();
+	}
+
+}

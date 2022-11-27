@@ -1,0 +1,180 @@
+package com.kpmobility.framework.adapter;
+
+import java.io.File;
+import java.net.URL;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+
+import org.openqa.selenium.Proxy;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.logging.LogType;
+import org.openqa.selenium.logging.LoggingPreferences;
+import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.LocalFileDetector;
+import org.openqa.selenium.remote.RemoteWebDriver;
+
+import com.kpmobility.clinicallibrary.intake.constants.Constants;
+import com.kpmobility.clinicallibrary.intake.utils.FrameworkConfig;
+import com.relevantcodes.extentreports.LogStatus;
+
+public class BrowserAdapter {
+	private WebDriver driver;
+	
+	public WebDriver initializeBrowserAdapter(String browser){
+		
+		if(FrameworkConfig.getProperty("GridExecution").equalsIgnoreCase("true")){
+			
+			DesiredCapabilities caps = null;
+			
+			if(browser.equalsIgnoreCase("Firefox")){
+				caps = DesiredCapabilities.firefox();
+				caps.setBrowserName("firefox");
+				caps.setJavascriptEnabled(true);
+				caps.setPlatform(org.openqa.selenium.Platform.WINDOWS);
+			}
+			else if(browser.equalsIgnoreCase("Chrome")){
+				
+				
+				ChromeOptions options = new ChromeOptions();
+				options.addArguments("load-extension=C:\\Grid_Execution_Files\\Adobe Experience Cloud Debugger");
+				options.addArguments("--enable-extensions");
+			    options.addArguments("disable-infobars");
+			   //s options.addArguments("--headless");
+			    options.addArguments("--allow-running-insecure-content");
+			    options.addArguments("--disable-features=VizDisplayCompositor");
+			   
+				
+				System.out.println("IN CHROME");
+				caps = DesiredCapabilities.chrome();
+				caps.setCapability(ChromeOptions.CAPABILITY, options);
+				caps.setBrowserName("chrome");
+				caps.setJavascriptEnabled(true);
+				caps.setPlatform(org.openqa.selenium.Platform.WINDOWS);
+				
+			//	System.setProperty("webdriver.chrome.driver", Constants.BASEDIR+System.getProperty("file.separator")+"Drivers"+System.getProperty("file.separator")+FrameworkConfig.getProperty("ChromeDriver"));
+				
+		//	    DesiredCapabilities capabilities = new DesiredCapabilities();
+			    
+		//	    capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+			    
+			    
+		//	    driver = new ChromeDriver(capabilities);
+		//	    driver.manage().deleteAllCookies();
+				
+			//Browser Headlesss testing	
+				/*System.out.println("IN CHROME");
+				caps = DesiredCapabilities.chrome();
+				caps.setBrowserName("chrome");
+				ChromeOptions options = new ChromeOptions();
+				options.addArguments("--headless");
+				caps.setCapability(ChromeOptions.CAPABILITY, options);
+				caps.setPlatform(org.openqa.selenium.Platform.WINDOWS);*/
+				
+			}
+			else if(browser.equalsIgnoreCase("IE")){
+				caps = DesiredCapabilities.internetExplorer();
+				caps.setBrowserName("internet explorer");
+				caps.setPlatform(org.openqa.selenium.Platform.WINDOWS);
+				caps.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS,
+					    true);
+				caps.setCapability(InternetExplorerDriver.IE_ENSURE_CLEAN_SESSION,true);
+				caps.setCapability(InternetExplorerDriver.ENABLE_PERSISTENT_HOVERING, false);
+				caps.setCapability(InternetExplorerDriver.NATIVE_EVENTS,false);
+			}
+			
+			try{
+				System.out.println("Getting remote driver");
+				String hubUrl = FrameworkConfig.getProperty("Serverhub");
+				System.out.println("hubURl=="+hubUrl);
+				driver  = new RemoteWebDriver(new URL("http://"+hubUrl+"/wd/hub"),caps);
+				((RemoteWebDriver) driver).setFileDetector(new LocalFileDetector());
+			}
+			catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+		else if(FrameworkConfig.getProperty("GridExecution").equalsIgnoreCase("false")){
+			if(browser.equalsIgnoreCase("Firefox")){
+				driver = new FirefoxDriver();
+				driver.get(FrameworkConfig.getProperty("URL"));
+			}
+			else if(browser.equalsIgnoreCase("Chrome")){
+			 
+				/*System.setProperty("webdriver.chrome.driver", Constants.BASEDIR+System.getProperty("file.separator")+"Drivers"+System.getProperty("file.separator")+FrameworkConfig.getProperty("ChromeDriver"));
+				ChromeOptions options = new ChromeOptions();
+			    options.addArguments("--disable-extensions");
+			    options.addArguments("disable-infobars");
+			    driver = new ChromeDriver(options);*/
+				
+				System.setProperty("webdriver.chrome.driver", Constants.BASEDIR+System.getProperty("file.separator")+"Drivers"+System.getProperty("file.separator")+FrameworkConfig.getProperty("ChromeDriver"));
+				ChromeOptions options = new ChromeOptions();
+				options.addArguments("load-extension=C:\\Grid_Execution_Files\\Adobe Experience Cloud Debugger");
+				options.addArguments("--enable-extensions");
+			    options.addArguments("disable-infobars");
+			   // options.addArguments("--headless");
+			    options.addArguments("--allow-running-insecure-content");
+			    DesiredCapabilities capabilities = new DesiredCapabilities();
+			    
+			    capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+			    driver = new ChromeDriver(capabilities);
+			    driver.manage().deleteAllCookies();
+			}
+			else if(browser.equalsIgnoreCase("IE")){
+				System.setProperty("webdriver.ie.driver", Constants.BASEDIR+System.getProperty("file.separator")+"Drivers"+System.getProperty("file.separator")+FrameworkConfig.getProperty("IEDriver"));
+				DesiredCapabilities caps = DesiredCapabilities.internetExplorer();
+				
+				caps.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS,
+				    true);
+				caps.setCapability(InternetExplorerDriver.IE_ENSURE_CLEAN_SESSION,true);
+				caps.setCapability(InternetExplorerDriver.ENABLE_PERSISTENT_HOVERING, false);
+				driver = new InternetExplorerDriver(caps);
+				driver.manage().deleteAllCookies();
+			}
+			
+		}
+		
+		
+		driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+		driver.manage().window().maximize();
+		
+		return driver;
+	}
+	
+	
+	
+	public void startGrid(){
+		if(!Constants.gridStarted){
+			Constants.gridStarted = true;
+			try {
+				
+				System.out.println("Start Grid------");
+				Runtime.getRuntime().exec("cmd /c start C://Grid_Execution_Files//grid.bat");
+				Thread.sleep(10000);
+				Runtime.getRuntime().exec("cmd /c start C://Grid_Execution_Files//node.bat");
+				Thread.sleep(10000);
+				//Runtime.getRuntime().exec("cmd /c start C://Users//X426332//Workspace//Mobility_Framework//GridConfig//node2.bat");
+				//Thread.sleep(20000);
+				Constants.gridinitiatedandUp=true;
+				Thread.sleep(10000);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+	}
+	
+	public void waitUntilGridIsUp(){
+		do {
+			try {
+				Thread.sleep(1000);
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		} while (!Constants.gridinitiatedandUp);
+	}
+	
+}

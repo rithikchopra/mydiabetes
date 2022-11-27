@@ -1,0 +1,73 @@
+package com.crm.qa.testcases;
+
+import java.awt.AWTException;
+import java.util.Hashtable;
+
+import org.openqa.selenium.WebDriver;
+import org.testng.Assert;
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
+import com.myDiabetes.qa.Constants.Constants;
+import com.myDiabetes.qa.base.TestBase;
+import com.myDiabetes.qa.pages.LoginPage;
+import com.relevantcodes.extentreports.LogStatus;
+
+
+public class LoginPageTest extends TestBase {
+	
+	private WebDriver driver;
+	private String PageTitle = "" ;
+	private int[] HomeHeaderSize;
+	private String ThirdKeyword = "";
+	
+	String TCName = this.getClass().getSimpleName();
+	
+    String TCDesc = "TC001_Validate creating new patient details";
+    
+    public LoginPageTest(){
+		super();
+	}
+	
+	@Test(dataProvider = "getData",description="TC001_Validate creating new patient details",  priority=1)
+		public void LoginPageTest(Hashtable <String,String>table) throws AWTException{
+		
+			if(table.get(Constants.DATA_STATUS_COL_NAME).equalsIgnoreCase("false")&& table.equals(null)){
+				return;
+			}
+			
+			initialization();
+			
+			extentLogger = reports.startTest(TCName);
+			
+			driver = initBrowser(table.get("Browser"));
+			openURL(driver);
+			
+			new Login(driver,extentLogger)
+			.LoginToAEM(table.get("MgrUserName"), table.get("MgrPassword"))		
+							
+					
+					driver.quit();	 		
+	}
+	
+	@AfterMethod
+	public void clearAll(ITestResult result){
+		if(result.equals("FAIL")){
+			extentLogger.log(LogStatus.FAIL, "");
+			
+		}
+		reports.endTest(extentLogger);
+		if(driver!=null){
+			driver.quit();
+		}
+		
+	}		
+			
+			
+
+}

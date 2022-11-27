@@ -1,0 +1,54 @@
+package com.myDiabetes.qa.base;
+
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.myDiabetes.qa.util.SeleniumScreenshot;
+import com.relevantcodes.extentreports.ExtentTest;
+import com.relevantcodes.extentreports.LogStatus;
+
+public class BasePage {
+
+	public WebDriver driver;
+	public ExtentTest extentLogger;
+	
+	public void click(WebElement webElement, String fieldName) {
+		try {
+			WebDriverWait wait = new WebDriverWait(driver, 20);
+			wait.until(ExpectedConditions.elementToBeClickable(webElement));
+			MoveToElement(webElement);	
+			webElement.click();
+			extentLogger.log(LogStatus.PASS,
+					extentLogger.addScreenCapture(SeleniumScreenshot.saveSeleniumScreenshots(driver, fieldName)));
+			extentLogger.log(LogStatus.INFO, "Clicked on " + fieldName);
+		} catch (TimeoutException e) {
+			reportFailure("Timeout Exception in " + Thread.currentThread().getStackTrace()[1].getMethodName()
+					+ " Method while working on " + fieldName + " " + e.getMessage());
+		} catch (Exception e) {
+			reportFailure("Exception in " + Thread.currentThread().getStackTrace()[1].getMethodName()
+					+ " Method while working on " + fieldName + " " + e.getMessage());
+		}
+	}
+	
+	public void MoveToElement(WebElement webElement) {
+		try {
+			Actions action = new Actions(driver);
+			action.moveToElement(webElement).build().perform();
+		} catch (Exception e) {
+			extentLogger.log(LogStatus.INFO,
+					extentLogger.addScreenCapture(SeleniumScreenshot.saveSeleniumScreenshots(driver, "Element not found")));
+
+		}
+	}
+
+	public void reportFailure(String message) {
+		extentLogger.log(LogStatus.FAIL, message);
+		extentLogger.log(LogStatus.FAIL,
+				extentLogger.addScreenCapture(SeleniumScreenshot.saveSeleniumScreenshots(driver, "exception")));
+	}
+	
+}
