@@ -27,7 +27,7 @@ public class LoginPageTest extends TestBase {
 	@Test(description = "TC001_Validate creating new patient details", priority = 1)
 	public void LoginPageTest() throws AWTException {
 		extentLogger = reports.startTest(TCName);
-
+//hjhjkjh
 		driver = initBrowser("Chrome");
 //		initialization();
 		driver.get(prop.getProperty("url"));
