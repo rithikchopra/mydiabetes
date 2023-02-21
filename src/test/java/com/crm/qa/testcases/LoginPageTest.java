@@ -19,7 +19,7 @@ public class LoginPageTest extends TestBase {
 	String TCName = this.getClass().getSimpleName();
 
 	String TCDesc = "TC001_Validate creating new patient details";
-//cdsbcmaz
+
 	public LoginPageTest() {
 		super();
 	}
