@@ -68,7 +68,7 @@ public class BasePage {
 			waitForSomeTime(1000);
 		//	MoveToElement(webElement);
 			webElement.sendKeys(value);
-			extentLogger.log(LogStatus.PASS,
+			extentLogger.log(LogStatus.FAIL,
 			extentLogger.addScreenCapture(SeleniumScreenshot.saveSeleniumScreenshots(driver, fieldName)));
 			Actions action = new Actions(driver);
 			action.sendKeys(Keys.TAB).build().perform();
