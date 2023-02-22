@@ -20,7 +20,7 @@ public class LoginPage extends BasePage{
 	}
 	
 	//Page Factory - OR:
-	@FindBy(xpath="//input[@type='email']")
+	@FindBy(xpath="//input[@type='emai']")
 	WebElement email;
 	
 	@FindBy(xpath="//input[@type='password']")
