@@ -30,8 +30,8 @@ public class LoginPageTest extends TestBase {
 //Adding a comment
 		driver = initBrowser("Chrome");
 //		initialization();
-		driver.get(prop.getProperty("url"));
 
+		driver.get(prop.getProperty("url"));
 //		loginPage = new LoginPage();
 
 		new LoginPage(driver, extentLogger)
