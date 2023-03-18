@@ -15,7 +15,7 @@ public class BrowserAdapter {
 	public WebDriver initializeBrowserAdapter(String browser){
 		
 		DesiredCapabilities caps = null;
-		if(browser.equalsIgnoreCase("Chrom")){	
+		if(browser.equalsIgnoreCase("Chrome")){	
 		System.setProperty("webdriver.chrome.driver", Constants.BASEDIR+System.getProperty("file.separator")+"Drivers"+System.getProperty("file.separator")+("ChromeDriver.exe"));
 		ChromeOptions options = new ChromeOptions();
 		options.addArguments("--enable-extensions");
